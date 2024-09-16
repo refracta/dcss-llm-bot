@@ -67,7 +67,7 @@ async function convertJsonToJsonl() {
     try {
         let files1 = fs.readdirSync('../chaosforge-wiki-crawler/extracted');
         files1 = files1.map(f => JSON.parse(fs.readFileSync(path.join('../chaosforge-wiki-crawler/extracted', f), 'utf8')));
-        let files2 = fs.readdirSync('../namu/extracted');
+        let files2 = fs.readdirSync('../namu-crawler/extracted');
         files2 = files2.map(f => JSON.parse(fs.readFileSync(path.join('../namu/extracted', f), 'utf8')));
         let files3 = JSON.parse(fs.readFileSync('../data/completions.json', 'utf8')).map(d => {
             d.title = `(DCSS RC OPTIONS) ${d.value}`;
