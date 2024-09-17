@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import {JSDOM} from "jsdom";
 import fetch from 'node-fetch';
-import html2markdown from 'html2markdown';
+import { html2Markdown } from '@inkdropapp/html2markdown'
 
 async function fetchAllItems() {
     let baseUrl = 'http://crawl.chaosforge.org';
@@ -40,17 +40,24 @@ for (let i = 0; i < allItems.length; i++) {
     const rawPageURL = item.url + '?action=raw';
     let page = await fetch(rawPageURL).then(r => r.text());
     const data = {...item};
-    if (page.includes('<title>Forbidden</title>')) {
+    if (page.includes('<title>Forbidden</title>') || true) {
+        const rawPage = page;
         page = await fetch(item.url).then(r => r.text());
         const document = new JSDOM(page).window.document;
         const output = document.querySelector('.mw-parser-output').innerHTML;
-        const content = html2markdown(output);
+        const content = html2Markdown(output);
         data.type = 'markdown';
         data.data = content;
         data.html = page;
+        data.rawPage = rawPage;
     } else {
         data.type = 'raw';
         data.data = page;
     }
-    fs.writeFileSync(`extracted/${encodeURIComponent(data.title)}.json`, JSON.stringify(data), 'utf8')
+    try {
+        fs.writeFileSync(`extracted/${data.title}.json`, JSON.stringify(data), 'utf8')
+        // OKB CHECK ':'
+    } catch (e){
+        fs.writeFileSync(`extracted/${encodeURIComponent(data.title)}.json`, JSON.stringify(data), 'utf8')
+    }
 }
